@@ -1,0 +1,169 @@
+{
+  "total": 12,
+  "ok_count": 10,
+  "needs_check_count": 2,
+  "column_mapping": {
+    "児童氏名": "name",
+    "学年": "grade",
+    "住所": "address",
+    "朝バス": "use_morning",
+    "帰りバス": "use_evening",
+    "備考": "note"
+  },
+  "records": [
+    {
+      "row": 2,
+      "name": "佐藤 はると",
+      "grade": "3年",
+      "address": "名古屋市中村区ダミー町1-1",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1742,
+      "lng": 136.8768,
+      "issues": []
+    },
+    {
+      "row": 3,
+      "name": "鈴木 さくら",
+      "grade": "1年",
+      "address": "名古屋市中村区ダミー町1-8",
+      "use_morning": true,
+      "use_evening": false,
+      "status": "ok",
+      "lat": 35.1748,
+      "lng": 136.8759,
+      "issues": []
+    },
+    {
+      "row": 4,
+      "name": "高橋 ゆうと",
+      "grade": "5年",
+      "address": "名古屋市中村区ダミー町2-3",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1739,
+      "lng": 136.8751,
+      "issues": []
+    },
+    {
+      "row": 5,
+      "name": "田中 みお",
+      "grade": "2年",
+      "address": "名古屋市西区サンプル町3-4",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1776,
+      "lng": 136.883,
+      "issues": []
+    },
+    {
+      "row": 6,
+      "name": "伊藤 そうた",
+      "grade": "4年",
+      "address": "名古屋市西区サンプル町3-9",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1781,
+      "lng": 136.8841,
+      "issues": []
+    },
+    {
+      "row": 7,
+      "name": "渡辺 ひな",
+      "grade": "6年",
+      "address": "名古屋市西区サンプル町4-2",
+      "use_morning": true,
+      "use_evening": null,
+      "status": "ok",
+      "lat": 35.177,
+      "lng": 136.8846,
+      "issues": [
+        {
+          "field": "use_evening",
+          "message": "下校で利用するかわかりません"
+        }
+      ]
+    },
+    {
+      "row": 8,
+      "name": "山本 れん",
+      "grade": "1年",
+      "address": "名古屋市中区テスト町5-1",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1703,
+      "lng": 136.8894,
+      "issues": []
+    },
+    {
+      "row": 9,
+      "name": "中村 あおい",
+      "grade": "3年",
+      "address": "名古屋市中区テスト町5-6",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1696,
+      "lng": 136.8903,
+      "issues": []
+    },
+    {
+      "row": 10,
+      "name": "小林 いつき",
+      "grade": "2年",
+      "address": "名古屋市中区テスト町6-2",
+      "use_morning": true,
+      "use_evening": false,
+      "status": "ok",
+      "lat": 35.169,
+      "lng": 136.8889,
+      "issues": []
+    },
+    {
+      "row": 11,
+      "name": "加藤 ゆい",
+      "grade": "5年",
+      "address": "名古屋市中村区ためし町7-3",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1662,
+      "lng": 136.879,
+      "issues": []
+    },
+    {
+      "row": 12,
+      "name": "吉田 はる",
+      "grade": "4年",
+      "address": "名古屋市中村区ためし町7-8",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "ok",
+      "lat": 35.1655,
+      "lng": 136.8781,
+      "issues": []
+    },
+    {
+      "row": 13,
+      "name": "山田 こはる",
+      "grade": "2年",
+      "address": "名古屋市中区",
+      "use_morning": true,
+      "use_evening": true,
+      "status": "failed",
+      "lat": null,
+      "lng": null,
+      "issues": [
+        {
+          "field": "address",
+          "message": "住所を地図上で確認できませんでした"
+        }
+      ]
+    }
+  ]
+}

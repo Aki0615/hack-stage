@@ -1,0 +1,44 @@
+[
+  {
+    "label": 1,
+    "lat": 35.1743,
+    "lng": 136.8759,
+    "student_count": 3,
+    "avg_walk_m": 90,
+    "max_walk_m": 120,
+    "reason": "3名の家のほぼ真ん中にあり、平均90m、長くても120mの距離で利用できます。",
+    "warnings": []
+  },
+  {
+    "label": 2,
+    "lat": 35.1776,
+    "lng": 136.8839,
+    "student_count": 3,
+    "avg_walk_m": 110,
+    "max_walk_m": 140,
+    "reason": "3名の家のほぼ真ん中にあり、平均110m、長くても140mの距離で利用できます。",
+    "warnings": []
+  },
+  {
+    "label": 3,
+    "lat": 35.1696,
+    "lng": 136.8895,
+    "student_count": 3,
+    "avg_walk_m": 100,
+    "max_walk_m": 130,
+    "reason": "3名の家のほぼ真ん中にあり、平均100m、長くても130mの距離で利用できます。",
+    "warnings": [
+      "さくら通り交差点の近くです。横断や待ち場所を現地で確認してください"
+    ]
+  },
+  {
+    "label": 4,
+    "lat": 35.1659,
+    "lng": 136.8786,
+    "student_count": 2,
+    "avg_walk_m": 60,
+    "max_walk_m": 70,
+    "reason": "2名の家のほぼ真ん中にあり、平均60m、長くても70mの距離で利用できます。",
+    "warnings": []
+  }
+]
