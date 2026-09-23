@@ -1,0 +1,246 @@
+[
+  {
+    "id": "mock-route-efficiency",
+    "strategy": "efficiency",
+    "summary": "停留所を少なくして、バスの所要時間を短くした案です。",
+    "metrics": {
+      "total_time": 18,
+      "stop_count": 3,
+      "average_walk_distance": 207,
+      "max_walk_distance": 470,
+      "walk_distance_spread": 136,
+      "safety_check_count": 2,
+      "all_within_400m": false
+    },
+    "buses": [
+      {
+        "bus": 1,
+        "stops": [
+          {
+            "stop_label": 1,
+            "time": "7:44"
+          },
+          {
+            "stop_label": 2,
+            "time": "7:50"
+          }
+        ]
+      },
+      {
+        "bus": 2,
+        "stops": [
+          {
+            "stop_label": 3,
+            "time": "7:48"
+          }
+        ]
+      }
+    ],
+    "stops": [
+      {
+        "label": 1,
+        "lat": 35.176,
+        "lng": 136.88,
+        "student_count": 6,
+        "avg_walk_m": 310,
+        "max_walk_m": 470,
+        "reason": "6名の家のほぼ真ん中にあり、平均310m、長くても470mの距離で利用できます。",
+        "warnings": [
+          "徒歩400mを超える児童がいます"
+        ]
+      },
+      {
+        "label": 2,
+        "lat": 35.1696,
+        "lng": 136.8895,
+        "student_count": 3,
+        "avg_walk_m": 100,
+        "max_walk_m": 130,
+        "reason": "3名の家のほぼ真ん中にあり、平均100m、長くても130mの距離で利用できます。",
+        "warnings": [
+          "さくら通り交差点の近くです。横断や待ち場所を現地で確認してください"
+        ]
+      },
+      {
+        "label": 3,
+        "lat": 35.1659,
+        "lng": 136.8786,
+        "student_count": 2,
+        "avg_walk_m": 60,
+        "max_walk_m": 70,
+        "reason": "2名の家のほぼ真ん中にあり、平均60m、長くても70mの距離で利用できます。",
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "id": "mock-route-fairness",
+    "strategy": "fairness",
+    "summary": "停留所を細かく置いて、どの児童も歩く距離が短くなるようにした案です。",
+    "metrics": {
+      "total_time": 26,
+      "stop_count": 5,
+      "average_walk_distance": 79,
+      "max_walk_distance": 140,
+      "walk_distance_spread": 46,
+      "safety_check_count": 1,
+      "all_within_400m": true
+    },
+    "buses": [
+      {
+        "bus": 1,
+        "stops": [
+          {
+            "stop_label": 2,
+            "time": "7:34"
+          },
+          {
+            "stop_label": 1,
+            "time": "7:37"
+          },
+          {
+            "stop_label": 3,
+            "time": "7:44"
+          }
+        ]
+      },
+      {
+        "bus": 2,
+        "stops": [
+          {
+            "stop_label": 5,
+            "time": "7:42"
+          },
+          {
+            "stop_label": 4,
+            "time": "7:49"
+          }
+        ]
+      }
+    ],
+    "stops": [
+      {
+        "label": 1,
+        "lat": 35.1745,
+        "lng": 136.8763,
+        "student_count": 2,
+        "avg_walk_m": 60,
+        "max_walk_m": 80,
+        "reason": "2名の家のほぼ真ん中にあり、平均60m、長くても80mの距離で利用できます。",
+        "warnings": []
+      },
+      {
+        "label": 2,
+        "lat": 35.1739,
+        "lng": 136.8751,
+        "student_count": 1,
+        "avg_walk_m": 0,
+        "max_walk_m": 0,
+        "reason": "1名の家のほぼ真ん中にあり、平均0m、長くても0mの距離で利用できます。",
+        "warnings": []
+      },
+      {
+        "label": 3,
+        "lat": 35.1776,
+        "lng": 136.8839,
+        "student_count": 3,
+        "avg_walk_m": 110,
+        "max_walk_m": 140,
+        "reason": "3名の家のほぼ真ん中にあり、平均110m、長くても140mの距離で利用できます。",
+        "warnings": []
+      },
+      {
+        "label": 4,
+        "lat": 35.1696,
+        "lng": 136.8895,
+        "student_count": 3,
+        "avg_walk_m": 100,
+        "max_walk_m": 130,
+        "reason": "3名の家のほぼ真ん中にあり、平均100m、長くても130mの距離で利用できます。",
+        "warnings": [
+          "さくら通り交差点の近くです。横断や待ち場所を現地で確認してください"
+        ]
+      },
+      {
+        "label": 5,
+        "lat": 35.1659,
+        "lng": 136.8786,
+        "student_count": 2,
+        "avg_walk_m": 60,
+        "max_walk_m": 70,
+        "reason": "2名の家のほぼ真ん中にあり、平均60m、長くても70mの距離で利用できます。",
+        "warnings": []
+      }
+    ]
+  },
+  {
+    "id": "mock-route-safety",
+    "strategy": "safety",
+    "summary": "注意が必要な場所の近くに停留所を置かないようにした案です。",
+    "metrics": {
+      "total_time": 22,
+      "stop_count": 3,
+      "average_walk_distance": 155,
+      "max_walk_distance": 380,
+      "walk_distance_spread": 106,
+      "safety_check_count": 0,
+      "all_within_400m": true
+    },
+    "buses": [
+      {
+        "bus": 1,
+        "stops": [
+          {
+            "stop_label": 1,
+            "time": "7:38"
+          },
+          {
+            "stop_label": 2,
+            "time": "7:46"
+          }
+        ]
+      },
+      {
+        "bus": 2,
+        "stops": [
+          {
+            "stop_label": 3,
+            "time": "7:47"
+          }
+        ]
+      }
+    ],
+    "stops": [
+      {
+        "label": 1,
+        "lat": 35.1743,
+        "lng": 136.8759,
+        "student_count": 3,
+        "avg_walk_m": 90,
+        "max_walk_m": 120,
+        "reason": "3名の家のほぼ真ん中にあり、平均90m、長くても120mの距離で利用できます。",
+        "warnings": []
+      },
+      {
+        "label": 2,
+        "lat": 35.1768,
+        "lng": 136.886,
+        "student_count": 6,
+        "avg_walk_m": 220,
+        "max_walk_m": 380,
+        "reason": "6名の家のほぼ真ん中にあり、平均220m、長くても380mの距離で利用できます。",
+        "warnings": []
+      },
+      {
+        "label": 3,
+        "lat": 35.1659,
+        "lng": 136.8786,
+        "student_count": 2,
+        "avg_walk_m": 60,
+        "max_walk_m": 70,
+        "reason": "2名の家のほぼ真ん中にあり、平均60m、長くても70mの距離で利用できます。",
+        "warnings": []
+      }
+    ]
+  }
+]
