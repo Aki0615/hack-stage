@@ -1,7 +1,8 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from app.mock import load_mock
-from app.services import csv_parser, validator
+from app.services import csv_parser, validator, geocoding
 from app import config
+from app.db import supabase
 
 router = APIRouter()
 
@@ -11,7 +12,6 @@ def create_plan():
 
 @router.post("/plans/{plan_id}/csv")
 def import_csv(plan_id: str, file: UploadFile = File(...)):
-    # USE_MOCKがtrueなら今まで通りダミーを返す（保険）
     if config.USE_MOCK:
         return load_mock("import")
 
@@ -27,7 +27,22 @@ def import_csv(plan_id: str, file: UploadFile = File(...)):
     records = csv_parser.to_records(df, mapping)
     records = validator.validate(records)
 
-    # 画面に返す集計
+    # ④ 住所を座標にする (Geocoding)
+    records = geocoding.geocode_all(records)
+
+    # ⑤ 古いデータを消してから保存する
+    supabase.table("students").delete().eq("plan_id", plan_id).execute()
+    rows = []
+    for r in records:
+        rows.append({
+            "plan_id": plan_id, "name": r["name"], "grade": r["grade"],
+            "address": r["address"], "use_morning": r["use_morning"],
+            "use_evening": r["use_evening"], "note": r["note"],
+            "lat": r["lat"], "lng": r["lng"], "geocode_status": r["status"],
+        })
+    supabase.table("students").insert(rows).execute()
+
+    # ⑥ 画面に返す集計
     needs_check = [r for r in records if len(r["issues"]) > 0]
     return {
         "total": len(records),
