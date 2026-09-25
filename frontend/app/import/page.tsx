@@ -5,11 +5,14 @@ import { PageFrame } from "@/components/layout/PageFrame";
 import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import { FormPreview } from "@/components/form/FormPreview";
 import { createPlan, uploadCsv } from "@/lib/api";
 import { saveData } from "@/lib/storage";
 
-// 申し込みformのテンプレート（GoogleフォームのID。未設定なら枠だけ表示する）
-const FORM_ID = process.env.NEXT_PUBLIC_FORM_ID;
+// 申し込みformのテンプレート（GoogleフォームのID。未設定なら画面内のプレビューを表示する）
+// 作り方は scripts/create-form.gs を参照。編集画面のURLをそのまま入れても、IDだけ取り出して使う
+const FORM_SETTING = process.env.NEXT_PUBLIC_FORM_ID ?? "";
+const FORM_ID = FORM_SETTING.match(/forms\/d\/([\w-]+)/)?.[1] ?? FORM_SETTING;
 
 export default function ImportPage() {
   const router = useRouter();
@@ -57,16 +60,16 @@ export default function ImportPage() {
       <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[950fr_575fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-[6.9375rem]">
         {/* 左：申し込みformのテンプレート */}
         <Panel title="申し込みformのテンプレート" description="このテンプレートをもとにformを作成し、共有できます。" className="min-h-0">
-          <div className="grid min-h-80 flex-1 place-items-center overflow-clip rounded-field bg-placeholder lg:min-h-0">
+          <div className="min-h-80 flex-1 overflow-clip rounded-field bg-placeholder lg:min-h-0">
             {FORM_ID ? (
               <iframe src={`https://docs.google.com/forms/d/${FORM_ID}/viewform?embedded=true`}
                       title="申し込みformのテンプレート" className="size-full" />
             ) : (
-              <p className="text-h2 font-extrabold">form表示</p>
+              <FormPreview />
             )}
           </div>
           <div className="flex shrink-0 flex-wrap items-center gap-4">
-            <Button variant="secondary" size="sm" disabled={!FORM_ID}
+            <Button variant="secondary" size="sm" disabled={!FORM_ID} newTab
                     href={`https://docs.google.com/forms/d/${FORM_ID}/copy`}>
               テンプレートをコピーして使う
             </Button>

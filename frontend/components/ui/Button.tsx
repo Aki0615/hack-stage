@@ -6,6 +6,7 @@ type Props = {
   variant?: "primary" | "secondary";
   size?: "lg" | "md" | "sm";  // lg＝高さ80（次へ）、md＝高さ60（カード内）、sm＝高さ50（小さい操作）
   href?: string;              // あればリンクとして表示する
+  newTab?: boolean;           // リンクを新しいタブで開くか（Googleフォームなど外のサイト）
   onClick?: () => void;
   disabled?: boolean;
 };
@@ -22,11 +23,14 @@ const COLORS = {
   disabled: "cursor-not-allowed border-gray bg-bg text-gray",
 };
 
-export function Button({ children, variant = "primary", size = "lg", href, onClick, disabled = false }: Props) {
+export function Button({ children, variant = "primary", size = "lg", href, newTab = false, onClick, disabled = false }: Props) {
   const className = `inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-full border-3 font-extrabold
                      ${SIZES[size]} ${disabled ? COLORS.disabled : COLORS[variant]}`;
 
   if (href && !disabled) {
+    if (newTab) {
+      return <a href={href} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>;
+    }
     return <Link href={href} className={className}>{children}</Link>;
   }
   return (
