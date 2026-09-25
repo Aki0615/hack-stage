@@ -1,6 +1,7 @@
-import type { ImportResult, StopCandidate } from "./types";
+import type { ImportResult, StopCandidate, RoutePlan } from "./types";
 import importMock from "@/mocks/import.json";
 import stopsMock from "@/mocks/stops.json";
+import routesMock from "@/mocks/routes.json";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
@@ -42,6 +43,13 @@ export async function uploadCsv(planId: string, file: File): Promise<ImportResul
 export async function generateStops(planId: string): Promise<StopCandidate[]> {
   if (USE_MOCK) { await wait(); return stopsMock as StopCandidate[]; }
   const res = await fetch(`${API}/plans/${planId}/stops/generate`, { method: "POST" });
+  await checkError(res);
+  return res.json();
+}
+
+export async function generateRoutes(planId: string): Promise<RoutePlan[]> {
+  if (USE_MOCK) { await wait(); return routesMock as RoutePlan[]; }
+  const res = await fetch(`${API}/plans/${planId}/routes/generate`, { method: "POST" });
   await checkError(res);
   return res.json();
 }
