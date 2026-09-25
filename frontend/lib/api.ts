@@ -2,6 +2,7 @@ import type { ImportResult, StopCandidate, RoutePlan } from "./types";
 import importMock from "@/mocks/import.json";
 import stopsMock from "@/mocks/stops.json";
 import routesMock from "@/mocks/routes.json";
+import noticeMock from "@/mocks/notice.json";
 
 const API = process.env.NEXT_PUBLIC_API_URL;
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
@@ -52,4 +53,12 @@ export async function generateRoutes(planId: string): Promise<RoutePlan[]> {
   const res = await fetch(`${API}/plans/${planId}/routes/generate`, { method: "POST" });
   await checkError(res);
   return res.json();
+}
+
+export async function generateNotice(planId: string): Promise<string> {
+  if (USE_MOCK) { await wait(); return noticeMock.notice; }
+  const res = await fetch(`${API}/plans/${planId}/notice`, { method: "POST" });
+  await checkError(res);
+  const data = await res.json();
+  return data.notice;
 }
