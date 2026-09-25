@@ -16,8 +16,14 @@ export default function StopsPage() {
   const [selected, setSelected] = useState(1);
   const [error, setError] = useState("");
 
-  // 画面を開いたら停留所候補を作る
+  // 画面を開いたら、取り込み画面で作った停留所候補を出す（なければここで作る）
   useEffect(() => {
+    const saved: StopCandidate[] | null = loadData("stops");
+    if (saved) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStops(saved);
+      return;
+    }
     generateStops(loadData("planId"))
       .then((data) => setStops(data))
       .catch((e) => setError(e.message));

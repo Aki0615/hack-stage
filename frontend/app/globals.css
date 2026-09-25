@@ -24,6 +24,7 @@ html {
   --color-placeholder: #e3e3e3; /* まだ中身がない表示枠（form表示など） */
 
   /* 文字サイズ（Figmaのタイポグラフィ。1rem＝Figmaの16px） */
+  --text-display: 4rem;   /* 集計カードの大きな数字 */
   --text-logo: 2.5rem;
   --text-h1: 2rem;
   --text-h2: 1.5rem;
