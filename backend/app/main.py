@@ -1,16 +1,17 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import plans
+from app.routers import plans, stops, routes, notice
 
 app = FastAPI()
 
-#フロント(localhost:3000)から呼べるようにする
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://lpcalhost:3000"],
+    allow_origins=["http://localhost:3000"],
     allow_methods=["*"],
     allow_headers=["*"],
-
 )
 
 app.include_router(plans.router)
+app.include_router(stops.router)
+app.include_router(routes.router)
+app.include_router(notice.router)
