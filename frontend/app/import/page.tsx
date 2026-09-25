@@ -6,7 +6,7 @@ import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { FormPreview } from "@/components/form/FormPreview";
-import { createPlan, uploadCsv } from "@/lib/api";
+import { createPlan, uploadCsv, generateStops } from "@/lib/api";
 import { saveData } from "@/lib/storage";
 
 // 申し込みformのテンプレート（GoogleフォームのID。未設定なら画面内のプレビューを表示する）
@@ -41,8 +41,11 @@ export default function ImportPage() {
     try {
       const planId = await createPlan(busCount, capacity);
       const result = await uploadCsv(planId, file);
+      const stops = await generateStops(planId);
       saveData("planId", planId);
+      saveData("busCount", busCount);
       saveData("importResult", result);
+      saveData("stops", stops);
       setDone(true);
     } catch (e) {
       setError((e as Error).message);          // 先生向けのエラー文を表示
