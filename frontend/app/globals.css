@@ -1,26 +1,49 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 画面サイズに合わせて全体を拡大縮小する
+   Figmaは1920×1080で作っているので、1rem＝16px（幅1920）を基準にし、
+   幅と高さのうち小さい方に合わせて縮める（ページをスクロールさせないため） */
+html {
+  font-size: clamp(8px, min(100vw / 120, 100dvh / 60), 16px);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Figmaの変数名そのままで登録する（color/primary → --color-primary → bg-primary） */
+@theme {
+  /* 色 */
+  --color-black: #212121;      /* 文字・枠線・ボタンの縁 */
+  --color-white: #fefdfc;      /* 画面全体の背景・入力欄 */
+  --color-surface: #ffffff;    /* ヘッダー・メインカードの面 */
+  --color-bg: #f8f4f1;         /* パネル内の面 */
+  --color-primary: #ffe79a;    /* 主要ボタン・今いるステップ・学校のマーカー */
+  --color-ok: #bfe3d5;         /* 完了したステップ・安全重視ルート */
+  --color-info: #b5dafc;       /* 利用者数のカード・効率重視ルート */
+  --color-accent: #ffbf70;     /* 公平性重視ルート・アクセント */
+  --color-warn: #fbb6bb;       /* 危ないポイント・現地確認が必要な停留所 */
+  --color-gray: #d8d8d8;       /* 未完了のステップ・無効・入力欄の枠 */
+  --color-text-gray: #6c6c6c;  /* 説明文 */
+  --color-placeholder: #e3e3e3; /* まだ中身がない表示枠（form表示など） */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* 文字サイズ（Figmaのタイポグラフィ。1rem＝Figmaの16px） */
+  --text-logo: 2.5rem;
+  --text-h1: 2rem;
+  --text-h2: 1.5rem;
+  --text-h3: 1.25rem;
+  --text-h4: 1.125rem;
+  --text-h5: 1rem;
+  --text-body: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-button-sm: 0.9375rem;  /* 小さいボタン */
+
+  /* 角丸 */
+  --radius-card: 2.5rem;   /* メインカード */
+  --radius-panel: 1.875rem;  /* カードの中のパネル */
+  --radius-field: 0.9375rem;  /* 入力欄 */
+  --radius-check: 0.625rem;  /* チェックボックス */
+
+  /* フォント（layout.tsx で読み込んだ変数を使う） */
+  --font-sans: var(--font-rounded), "Hiragino Maru Gothic ProN", sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-white text-black font-sans font-medium;
 }
