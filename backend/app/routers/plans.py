@@ -13,6 +13,7 @@ def create_plan():
 # CSVインポート・Geocoding処理
 @router.post("/plans/{plan_id}/csv")
 def import_csv(plan_id: str, file: UploadFile = File(...)):
+
     df = csv_parser.read_csv_file(file.file.read())
     mapping = csv_parser.detect_columns(list(df.columns))
     if "name" not in mapping.values() or "address" not in mapping.values():
@@ -31,6 +32,7 @@ def import_csv(plan_id: str, file: UploadFile = File(...)):
             "lat": r["lat"], "lng": r["lng"], "geocode_status": r["status"],
         })
     supabase.table("students").insert(rows).execute()
+
 
     needs_check = [r for r in records if len(r["issues"]) > 0]
     return {
