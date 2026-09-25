@@ -3,6 +3,9 @@ import { APIProvider, Map, AdvancedMarker } from "@vis.gl/react-google-maps";
 import type { StopCandidate } from "@/lib/types";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+// 地図の見た目はGoogle Cloudの「マップのスタイル」で決まる（scripts/map-style.json を読み込んで作る）
+// 未設定のときは、スタイルなしの仮のIDで表示する
+const MAP_ID = process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID || "DEMO_MAP_ID";
 
 type Props = {
   school: { lat: number; lng: number };
@@ -40,7 +43,7 @@ export function BusMap({ school, stops, selectedLabel, onSelect }: Props) {
 
   return (
     <APIProvider apiKey={API_KEY}>
-      <Map defaultCenter={school} defaultZoom={15} mapId="DEMO_MAP_ID" disableDefaultUI
+      <Map defaultCenter={school} defaultZoom={15} mapId={MAP_ID} disableDefaultUI clickableIcons={false}
            className="h-full min-h-80 w-full overflow-hidden rounded-panel">
         {/* 学校 */}
         <AdvancedMarker position={school}>
