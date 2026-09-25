@@ -2,6 +2,7 @@
 import { useEffect } from "react";
 import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
 import type { StopCandidate } from "@/lib/types";
+import { fetchRoadPath } from "@/lib/roadPath";
 
 const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 // 地図の見た目はGoogle Cloudの「マップのスタイル」で決まる（scripts/map-style.json を読み込んで作る）
@@ -79,15 +80,35 @@ function tokenColor(name: string) {
 }
 
 // 地図に線を引く部品（画面には何も表示せず、地図に線を足すだけ）
+// 道路に沿った道順を取って線を引く。取れないときは停留所どうしを直線で結ぶ
 function RouteLine({ line }: { line: RouteLineData }) {
   const map = useMap();
   useEffect(() => {
     if (!map) return;
+    let drawn: google.maps.Polyline[] = [];
+    let cancelled = false;
+
     // 墨色の太い線の上に、色の線を重ねる（パステルでも見えるように）
-    const outline = new google.maps.Polyline({ path: line.points, strokeColor: tokenColor("--color-black"), strokeWeight: 9, map });
-    const colored = new google.maps.Polyline({ path: line.points, strokeColor: tokenColor(line.colorVar), strokeWeight: 5, map });
+    function draw(path: { lat: number; lng: number }[]) {
+      if (cancelled) return;
+      drawn = [
+        new google.maps.Polyline({ path, strokeColor: tokenColor("--color-black"), strokeWeight: 9, map }),
+        new google.maps.Polyline({ path, strokeColor: tokenColor(line.colorVar), strokeWeight: 5, map }),
+      ];
+    }
+
+    fetchRoadPath(line.points)
+      .then(draw)
+      .catch((e) => {
+        console.warn("道路に沿った道順を取れなかったため、直線で表示します:", e.message);
+        draw(line.points);
+      });
+
     // 線が変わるときに、古い線を消す
-    return () => { outline.setMap(null); colored.setMap(null); };
+    return () => {
+      cancelled = true;
+      drawn.forEach((p) => p.setMap(null));
+    };
   }, [map, line]);
   return null;
 }
