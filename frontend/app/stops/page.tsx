@@ -32,34 +32,45 @@ export default function StopsPage() {
   const stop = stops.find((s) => s.label === selected);
 
   return (
-    <PageFrame step={2} title="停留所の候補" description="番号を押すと、そこを選んだ理由が見られます">
+    <PageFrame step={2} title="停留所の候補" description="候補地点をクリックすると、その停留所の詳しい情報が見られます。"
+               card={false}>
       {error && <p className="rounded-field bg-warn p-3 text-h3 font-bold">{error}</p>}
       {stops.length === 0 && !error && <p className="text-h3">停留所の候補を作っています…</p>}
 
       {stops.length > 0 && (
-        <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[950fr_575fr] lg:grid-rows-[minmax(0,1fr)]">
+        <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[950fr_616fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-[5.4375rem]">
           <BusMap school={SCHOOL} stops={stops} selectedLabel={selected} onSelect={setSelected} />
 
           {stop && (
-            <Panel title={`停留所${stop.label}`} className="min-h-0 overflow-y-auto">
-              <div className="text-h3">
-                <p>対象：{stop.student_count}名</p>
-                <p>平均の距離：直線で約{stop.avg_walk_m}m</p>
-                <p>最大の距離：直線で約{stop.max_walk_m}m</p>
-              </div>
-              <div className="rounded-field bg-info p-4">
-                <p className="text-h4 font-extrabold">この候補にした理由</p>
-                <p className="text-h5">{stop.reason}</p>
-              </div>
+            <Panel title={`候補${stop.label}`} className="max-h-full gap-7 self-start overflow-y-auto px-7 py-8 lg:min-h-[86%]">
+              {/* 数字（左に項目名、右に値） */}
+              <dl className="grid w-fit shrink-0 grid-cols-[auto_auto] gap-x-8 gap-y-3 text-h3">
+                <dt className="text-text-gray">利用者</dt>
+                <dd>{stop.student_count}人</dd>
+                <dt className="text-text-gray">平均の距離</dt>
+                <dd>{stop.avg_walk_m}m</dd>
+                <dt className="text-text-gray">最大の距離</dt>
+                <dd>{stop.max_walk_m}m</dd>
+              </dl>
+
+              {/* 安全に関わる注意は、見落とさないよう理由より先に出す */}
               {stop.warnings.map((w) => (
-                <p key={w} className="rounded-field bg-warn p-4 text-h5 font-bold">⚠ {w}</p>
+                <div key={w} className="shrink-0 rounded-panel bg-warn px-[1.0625rem] py-6">
+                  <p className="text-h2 font-extrabold">現地で確認してください</p>
+                  <p className="text-h3">{w}</p>
+                </div>
               ))}
+
+              <div className="shrink-0 rounded-panel bg-info px-[1.0625rem] py-8">
+                <p className="text-h2 font-extrabold">この候補にした理由</p>
+                <p className="text-h3 text-text-gray">{stop.reason}</p>
+              </div>
             </Panel>
           )}
         </div>
       )}
 
-      <StepNav backHref="/result" nextLabel="ルート案を作る" onNext={() => router.push("/routes")}
+      <StepNav backHref="/result" nextLabel="次へ" onNext={() => router.push("/routes")}
                nextDisabled={stops.length === 0} />
     </PageFrame>
   );
