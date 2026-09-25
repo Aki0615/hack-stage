@@ -9,10 +9,11 @@ type Props = {
   title: string;             // 見出し
   description?: string;      // 見出しの下の説明
   card?: boolean;            // 白いメインカードで囲むか（取り込み結果画面などは囲まない）
+  heading?: boolean;         // 見出しを出すか（false なら画面の中で <PageHeading> を置く）
   children: React.ReactNode; // 画面の中身
 };
 
-export function PageFrame({ step, title, description, card = true, children }: Props) {
+export function PageFrame({ step, title, description, card = true, heading = true, children }: Props) {
   return (
     <div className="flex min-h-dvh flex-col lg:h-dvh lg:overflow-hidden">
       <Header />
@@ -21,13 +22,20 @@ export function PageFrame({ step, title, description, card = true, children }: P
       </div>
       <main className="flex min-h-0 flex-1 flex-col px-6 pb-6">
         <section className={`mx-auto flex min-h-0 w-full max-w-[1700px] flex-1 flex-col gap-7 p-8 ${card ? "rounded-card bg-surface" : ""}`}>
-          <div className="shrink-0">
-            <h1 className="text-h1 font-black">{title}</h1>
-            {description && <p className="text-h2 text-text-gray">{description}</p>}
-          </div>
+          {heading && <PageHeading title={title} description={description} />}
           {children}
         </section>
       </main>
+    </div>
+  );
+}
+
+// 画面の見出しと説明。ふだんは PageFrame が出すが、見出しの横にも部品を並べたい画面では自分で置く
+export function PageHeading({ title, description }: { title: string; description?: string }) {
+  return (
+    <div className="shrink-0">
+      <h1 className="text-h1 font-black">{title}</h1>
+      {description && <p className="text-h2 text-text-gray">{description}</p>}
     </div>
   );
 }
