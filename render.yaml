@@ -1,0 +1,22 @@
+# Render の設定（バックエンドの公開用）。Render の「New → Blueprint」でこのリポジトリを選ぶと、この内容で作られる
+# キーなどの秘密の値（sync: false）は、作るときに Render の画面で入力する
+services:
+  - type: web
+    name: michishirube-api
+    runtime: python
+    region: singapore        # 日本に一番近い地域
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: FRONTEND_ORIGINS  # 公開したフロントのURL（Vercel）
+        sync: false
