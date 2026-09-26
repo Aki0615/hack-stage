@@ -5,7 +5,8 @@ import { PageFrame } from "@/components/layout/PageFrame";
 import { StepNav } from "@/components/layout/StepNav";
 import { Panel } from "@/components/ui/Panel";
 import { StatCard } from "@/components/ui/StatCard";
-import { loadData } from "@/lib/storage";
+import { RestartGuide } from "@/components/layout/RestartGuide";
+import { hasData, loadData } from "@/lib/storage";
 import type { ImportResult, StopCandidate } from "@/lib/types";
 
 export default function ResultPage() {
@@ -13,16 +14,25 @@ export default function ResultPage() {
   const [result, setResult] = useState<ImportResult | null>(null);
   const [stops, setStops] = useState<StopCandidate[]>([]);
   const [busCount, setBusCount] = useState(0);
+  const [missing, setMissing] = useState(false);   // 取り込みの結果がない
 
   // 画面を開いたときに1回だけ、取り込み画面で保存した結果を取り出す
   // （sessionStorage はブラウザにしかないため、表示後に読む必要がある）
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMissing(!hasData("importResult"));
     setResult(loadData("importResult"));
     setStops(loadData("stops") ?? []);
     setBusCount(loadData("busCount") ?? 0);
   }, []);
 
+  if (missing) {
+    return (
+      <PageFrame step={1} title="取り込み結果" description="回答をもとに、利用者の分布を整理しました。" card={false}>
+        <RestartGuide />
+      </PageFrame>
+    );
+  }
   if (!result) return <p className="p-10 text-h3">読み込み中…</p>;
 
   const morningCount = result.records.filter((r) => r.use_morning).length;

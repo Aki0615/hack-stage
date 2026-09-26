@@ -7,7 +7,8 @@ import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { generateNotice } from "@/lib/api";
-import { loadData, saveData } from "@/lib/storage";
+import { RestartGuide } from "@/components/layout/RestartGuide";
+import { hasData, loadData, saveData } from "@/lib/storage";
 
 // 送る前に先生が確かめる項目
 const CHECK_ITEMS = [
@@ -23,9 +24,15 @@ export default function NoticePage() {
   const [editing, setEditing] = useState(false);
   const [checked, setChecked] = useState<string[]>([]);
   const [error, setError] = useState("");
+  const [missing, setMissing] = useState(false);   // 計画か、選んだ案がない
 
   // 画面を開いたら案内文を作る
   useEffect(() => {
+    if (!hasData("planId", "selectedRouteId")) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMissing(true);
+      return;
+    }
     generateNotice(loadData("planId"), loadData("selectedRouteId"))
       .then((notice) => setText(notice))
       .catch((e) => setError(e.message));
@@ -47,6 +54,15 @@ export default function NoticePage() {
   }
 
   const allChecked = checked.length === CHECK_ITEMS.length;
+
+  if (missing) {
+    return (
+      <PageFrame step={4} title="保護者への案内"
+                 description="メールでそのまま送れる案内文を作成できます。送る前に右の項目を確認してください。" card={false}>
+        <RestartGuide />
+      </PageFrame>
+    );
+  }
 
   return (
     <PageFrame step={4} title="保護者への案内"

@@ -2,18 +2,21 @@
 import { useEffect, useState } from "react";
 import { PageFrame } from "@/components/layout/PageFrame";
 import { Button } from "@/components/ui/Button";
-import { loadData } from "@/lib/storage";
+import { RestartGuide } from "@/components/layout/RestartGuide";
+import { hasData, loadData } from "@/lib/storage";
 import { STEP_TITLES } from "@/lib/steps";
 
 export default function DonePage() {
   const [text, setText] = useState("");
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState("");
+  const [missing, setMissing] = useState(false);   // 確定した文章がない
 
   // 保護者への案内画面で確定した文章を取り出す
   // （sessionStorage はブラウザにしかないため、表示後に読む必要がある）
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMissing(!hasData("notice"));
     setText(loadData("notice") ?? "");
   }, []);
 
@@ -26,6 +29,14 @@ export default function DonePage() {
     } catch {
       setError("コピーできませんでした。文章を選んで手でコピーしてください");
     }
+  }
+
+  if (missing) {
+    return (
+      <PageFrame step={4} title="保護者への案内" description="" card={false}>
+        <RestartGuide />
+      </PageFrame>
+    );
   }
 
   return (
