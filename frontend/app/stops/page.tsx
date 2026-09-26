@@ -6,7 +6,8 @@ import { StepNav } from "@/components/layout/StepNav";
 import { Panel } from "@/components/ui/Panel";
 import { BusMap } from "@/components/map/BusMap";
 import { generateStops } from "@/lib/api";
-import { loadData } from "@/lib/storage";
+import { RestartGuide } from "@/components/layout/RestartGuide";
+import { hasData, loadData } from "@/lib/storage";
 import { DEFAULT_SCHOOL, loadSchool } from "@/lib/school";
 import type { StopCandidate } from "@/lib/types";
 
@@ -16,11 +17,16 @@ export default function StopsPage() {
   const [selected, setSelected] = useState(1);
   const [error, setError] = useState("");
   const [school, setSchool] = useState(DEFAULT_SCHOOL);
+  const [missing, setMissing] = useState(false);   // 停留所も計画もない
 
   // 画面を開いたら、取り込み画面で作った停留所候補を出す（なければここで作る）
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSchool(loadSchool());
+    if (!hasData("stops") && !hasData("planId")) {
+      setMissing(true);
+      return;
+    }
     const saved: StopCandidate[] | null = loadData("stops");
     if (saved) {
       setStops(saved);
@@ -36,8 +42,9 @@ export default function StopsPage() {
   return (
     <PageFrame step={2} title="停留所の候補" description="候補地点をクリックすると、その停留所の詳しい情報が見られます。"
                card={false}>
+      {missing && <RestartGuide />}
       {error && <p className="rounded-field bg-warn p-3 text-h3 font-bold">{error}</p>}
-      {stops.length === 0 && !error && <p className="text-h3">停留所の候補を作っています…</p>}
+      {stops.length === 0 && !error && !missing && <p className="text-h3">停留所の候補を作っています…</p>}
 
       {stops.length > 0 && (
         <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[950fr_616fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-[5.4375rem]">

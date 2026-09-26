@@ -6,7 +6,8 @@ import { StepNav } from "@/components/layout/StepNav";
 import { Panel } from "@/components/ui/Panel";
 import { BusMap } from "@/components/map/BusMap";
 import { generateRoutes } from "@/lib/api";
-import { loadData, saveData } from "@/lib/storage";
+import { RestartGuide } from "@/components/layout/RestartGuide";
+import { hasData, loadData, saveData } from "@/lib/storage";
 import { DEFAULT_SCHOOL, loadSchool, type LatLng } from "@/lib/school";
 import { STRATEGY_INFO, STRATEGY_ORDER } from "@/lib/strategy";
 import { routeNotes } from "@/lib/routeNotes";
@@ -21,11 +22,16 @@ export default function RoutesPage() {
   const [current, setCurrent] = useState(0);          // 今見ている案の番号
   const [error, setError] = useState("");
   const [school, setSchool] = useState(DEFAULT_SCHOOL);
+  const [missing, setMissing] = useState(false);   // 計画がない
 
   // 画面を開いたら3つのルート案を作る（効率・公平性・安全の順に並べる）
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSchool(loadSchool());
+    if (!hasData("planId")) {
+      setMissing(true);
+      return;
+    }
     generateRoutes(loadData("planId"))
       .then((data) => setPlans([...data].sort((a, b) => STRATEGY_ORDER.indexOf(a.strategy) - STRATEGY_ORDER.indexOf(b.strategy))))
       .catch((e) => setError(e.message));
@@ -47,7 +53,8 @@ export default function RoutesPage() {
         <PageHeading title={TITLE} description={DESCRIPTION} />
 
         {error && <p className="rounded-field bg-warn p-3 text-h3 font-bold">{error}</p>}
-        {!plan && !error && <p className="text-h3">ルート案を作っています…</p>}
+        {missing && <div className="lg:col-span-2"><RestartGuide /></div>}
+        {!plan && !error && !missing && <p className="text-h3">ルート案を作っています…</p>}
 
         {plan && <RouteView plans={plans} current={current} onChange={setCurrent} school={school} />}
       </div>
