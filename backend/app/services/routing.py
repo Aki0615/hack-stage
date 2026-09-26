@@ -123,14 +123,15 @@ def make_three_plans(school: dict, students: list[dict], bus_count: int, capacit
 
         buses = []
         longest = 0
-        for bus_number, order in enumerate(orders):
+        for order in orders:
             if len(order) == 0:
                 continue
             times = make_times(order, time_table)
             bus_stops = []
             for node, time in zip(order, times):
                 bus_stops.append({"stop_label": stops[node - 1]["label"], "time": time})
-            buses.append({"bus": bus_number + 1, "stops": bus_stops})
+            # 使わなかったバスを飛ばして、1号車から順に番号を付ける
+            buses.append({"bus": len(buses) + 1, "stops": bus_stops})
             minutes = 8 * 60 - (int(times[0].split(":")[0]) * 60 + int(times[0].split(":")[1]))
             longest = max(longest, minutes)
 

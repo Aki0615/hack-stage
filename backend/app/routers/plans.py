@@ -31,7 +31,7 @@ def create_plan(plan: PlanCreate):
 # CSVインポート・Geocoding処理
 @router.post("/plans/{plan_id}/csv")
 def import_csv(plan_id: str, file: UploadFile = File(...)):
-    df = csv_parser.read_csv_file(file.file.read())
+    df = csv_parser.read_csv_file(file.file.read(), file.filename or "")
     mapping = csv_parser.detect_columns(list(df.columns))
     if "name" not in mapping.values() or "address" not in mapping.values():
         raise HTTPException(400, "氏名または住所の列が見つかりませんでした")

@@ -1,4 +1,5 @@
 import type { ImportResult, StopCandidate, RoutePlan } from "./types";
+import { SCHOOL, SCHOOL_NAME } from "./steps";
 import importMock from "@/mocks/import.json";
 import stopsMock from "@/mocks/stops.json";
 import routesMock from "@/mocks/routes.json";
@@ -7,11 +8,20 @@ import noticeMock from "@/mocks/notice.json";
 const API = process.env.NEXT_PUBLIC_API_URL;
 const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
+// バックエンドを呼ぶ。つながらないときも、先生が読める文章のエラーにする
+async function request(path: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(`${API}${path}`, init);
+  } catch {
+    throw new Error("サーバーにつながりませんでした。少し待ってから、もう一度お試しください");
+  }
+}
+
 // エラーのときは、バックエンドが返した文章（detail）を投げる
 async function checkError(res: Response) {
   if (!res.ok) {
-    const body = await res.json();
-    throw new Error(body.detail || "通信に失敗しました。もう一度お試しください");
+    const body = await res.json().catch(() => ({}));
+    throw new Error(typeof body.detail === "string" ? body.detail : "通信に失敗しました。もう一度お試しください");
   }
 }
 
@@ -22,10 +32,10 @@ function wait() {
 
 export async function createPlan(busCount: number, capacity: number): Promise<string> {
   if (USE_MOCK) { return "mock-plan"; }
-  const res = await fetch(`${API}/plans`, {
+  const res = await request("/plans", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bus_count: busCount, bus_capacity: capacity }),
+    body: JSON.stringify({ bus_count: busCount, bus_capacity: capacity, school_name: SCHOOL_NAME, school_lat: SCHOOL.lat, school_lng: SCHOOL.lng }),
   });
   await checkError(res);
   const data = await res.json();
@@ -36,28 +46,34 @@ export async function uploadCsv(planId: string, file: File): Promise<ImportResul
   if (USE_MOCK) { await wait(); return importMock as ImportResult; }
   const form = new FormData();
   form.append("file", file);
-  const res = await fetch(`${API}/plans/${planId}/csv`, { method: "POST", body: form });
+  const res = await request(`/plans/${planId}/csv`, { method: "POST", body: form });
   await checkError(res);
   return res.json();
 }
 
 export async function generateStops(planId: string): Promise<StopCandidate[]> {
   if (USE_MOCK) { await wait(); return stopsMock as StopCandidate[]; }
-  const res = await fetch(`${API}/plans/${planId}/stops/generate`, { method: "POST" });
+  const res = await request(`/plans/${planId}/stops/generate`, { method: "POST" });
   await checkError(res);
-  return res.json();
+  const data = await res.json();
+  return data.stops;
 }
 
 export async function generateRoutes(planId: string): Promise<RoutePlan[]> {
   if (USE_MOCK) { await wait(); return routesMock as RoutePlan[]; }
-  const res = await fetch(`${API}/plans/${planId}/routes/generate`, { method: "POST" });
+  const res = await request(`/plans/${planId}/routes/generate`, { method: "POST" });
   await checkError(res);
   return res.json();
 }
 
-export async function generateNotice(planId: string): Promise<string> {
+// routeId：先生がルート比較で選んだ案
+export async function generateNotice(planId: string, routeId: string): Promise<string> {
   if (USE_MOCK) { await wait(); return noticeMock.notice; }
-  const res = await fetch(`${API}/plans/${planId}/notice`, { method: "POST" });
+  const res = await request(`/plans/${planId}/notice`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ route_id: routeId }),
+  });
   await checkError(res);
   const data = await res.json();
   return data.notice;
