@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { FormPreview } from "@/components/form/FormPreview";
 import { createPlan, uploadCsv, generateStops } from "@/lib/api";
-import { saveData } from "@/lib/storage";
+import { clearData, saveData } from "@/lib/storage";
 import { DEFAULT_SCHOOL, getCurrentPosition, type LatLng } from "@/lib/school";
 
 // 申し込みformのテンプレート（GoogleフォームのID。未設定なら画面内のプレビューを表示する）
@@ -65,6 +65,7 @@ export default function ImportPage() {
       const planId = await createPlan(busCount, capacity, schoolPos);
       const result = await uploadCsv(planId, file);
       const stops = await generateStops(planId);
+      clearData();                               // 前回の案や案内文を残さない
       saveData("planId", planId);
       saveData("school", schoolPos);
       saveData("busCount", busCount);
