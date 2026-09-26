@@ -1,5 +1,5 @@
 import type { ImportResult, StopCandidate, RoutePlan } from "./types";
-import { SCHOOL } from "./steps";
+import { SCHOOL, SCHOOL_NAME } from "./steps";
 import importMock from "@/mocks/import.json";
 import stopsMock from "@/mocks/stops.json";
 import routesMock from "@/mocks/routes.json";
@@ -35,7 +35,7 @@ export async function createPlan(busCount: number, capacity: number): Promise<st
   const res = await request("/plans", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bus_count: busCount, bus_capacity: capacity, school_lat: SCHOOL.lat, school_lng: SCHOOL.lng }),
+    body: JSON.stringify({ bus_count: busCount, bus_capacity: capacity, school_name: SCHOOL_NAME, school_lat: SCHOOL.lat, school_lng: SCHOOL.lng }),
   });
   await checkError(res);
   const data = await res.json();
