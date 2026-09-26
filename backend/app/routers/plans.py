@@ -1,19 +1,36 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException
+from pydantic import BaseModel
 from app.db import supabase
 from app.services import csv_parser, validator, geocoding
 from app.mock import load_mock
 
 router = APIRouter()
 
-# 新規計画作成（モック）
+# フロントエンドから受け取るデータの形を約束する
+class PlanCreate(BaseModel):
+    school_lat: float
+    school_lng: float
+    school_name: str = "現在地の学校"
+    bus_count: int = 2
+    bus_capacity: int = 20
+
+# 新規計画作成（本番用）
 @router.post("/plans")
-def create_plan():
-    return load_mock("plan")
+def create_plan(plan: PlanCreate):
+    # 打越さんから送られてきた緯度経度をSupabaseのplansテーブルに保存する
+    result = supabase.table("plans").insert({
+        "school_name": plan.school_name,
+        "school_lat": plan.school_lat,
+        "school_lng": plan.school_lng,
+        "bus_count": plan.bus_count,
+        "bus_capacity": plan.bus_capacity
+    }).execute()
+    
+    return result.data[0]
 
 # CSVインポート・Geocoding処理
 @router.post("/plans/{plan_id}/csv")
 def import_csv(plan_id: str, file: UploadFile = File(...)):
-
     df = csv_parser.read_csv_file(file.file.read())
     mapping = csv_parser.detect_columns(list(df.columns))
     if "name" not in mapping.values() or "address" not in mapping.values():
@@ -32,7 +49,6 @@ def import_csv(plan_id: str, file: UploadFile = File(...)):
             "lat": r["lat"], "lng": r["lng"], "geocode_status": r["status"],
         })
     supabase.table("students").insert(rows).execute()
-
 
     needs_check = [r for r in records if len(r["issues"]) > 0]
     return {
