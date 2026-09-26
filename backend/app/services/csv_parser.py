@@ -5,16 +5,21 @@ COLUMN_ALIASES = {
     "name":        ["氏名", "名前", "児童氏名", "生徒名", "児童・生徒名"],
     "grade":       ["学年"],
     "address":     ["住所", "自宅住所", "居住地", "ご住所"],
-    "use_morning": ["登校", "朝バス", "登校利用"],
-    "use_evening": ["下校", "帰りバス", "下校利用"],
-    "note":        ["備考", "メモ", "希望の停留所・備考"],
+    "use_morning": ["登校", "朝バス", "登校利用", "登校時に利用する"],
+    "use_evening": ["下校", "帰りバス", "下校利用", "下校時に利用する"],
+    "note":        ["備考", "メモ", "希望の停留所・備考", "備考欄"],
+    "wish":        ["希望する停留所", "希望の停留所"],
 }
 
-def read_csv_file(raw: bytes) -> pd.DataFrame:
-    try:
-        df = pd.read_csv(io.BytesIO(raw), encoding="utf-8-sig", dtype=str)
-    except UnicodeDecodeError:
-        df = pd.read_csv(io.BytesIO(raw), encoding="cp932", dtype=str)
+def read_csv_file(raw: bytes, filename: str = "") -> pd.DataFrame:
+    # Googleフォームの回答をExcel（.xlsx）で保存したファイルも読めるようにする
+    if filename.lower().endswith((".xlsx", ".xls")):
+        df = pd.read_excel(io.BytesIO(raw), dtype=str)
+    else:
+        try:
+            df = pd.read_csv(io.BytesIO(raw), encoding="utf-8-sig", dtype=str)
+        except UnicodeDecodeError:
+            df = pd.read_csv(io.BytesIO(raw), encoding="cp932", dtype=str)
     df = df.dropna(how="all")
     df = df.fillna("")
     return df
@@ -34,6 +39,14 @@ def to_bool(value: str):
         return False
     return None
 
+def join_note(wish: str, note: str) -> str:
+    """希望する停留所があれば、備考の前に付ける"""
+    if wish and note:
+        return f"希望の停留所：{wish}／{note}"
+    if wish:
+        return f"希望の停留所：{wish}"
+    return note
+
 def to_records(df: pd.DataFrame, mapping: dict) -> list[dict]:
     df = df.rename(columns=mapping)
     records = []
@@ -46,7 +59,7 @@ def to_records(df: pd.DataFrame, mapping: dict) -> list[dict]:
             "address": row.get("address", "").strip(),
             "use_morning": to_bool(row.get("use_morning", "").strip()),
             "use_evening": to_bool(row.get("use_evening", "").strip()),
-            "note": row.get("note", "").strip(),
+            "note": join_note(row.get("wish", "").strip(), row.get("note", "").strip()),
         })
         row_number += 1
     return records

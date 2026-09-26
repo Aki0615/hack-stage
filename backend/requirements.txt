@@ -8,3 +8,4 @@ scikit-learn
 ortools
 requests
 anthropic
+openpyxl

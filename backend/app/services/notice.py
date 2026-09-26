@@ -44,3 +44,22 @@ def create_all_notices(students: list[dict], stops: list[dict], route: dict) -> 
             "text": text,
         })
     return notices
+
+def create_notice(route: dict, school_name: str) -> str:
+    """保護者の皆さまへまとめて送る案内文（停留所と集合時刻の一覧）"""
+    lines = []
+    for b in route.get("buses", []):
+        for s in b.get("stops", []):
+            lines.append((s["stop_label"], f"・停留所{s['stop_label']}　{s['time']}集合（{b['bus']}号車）"))
+    lines.sort()   # 保護者が自分の停留所を探しやすいよう、番号順に並べる
+
+    return (
+        "保護者の皆さま\n\n"
+        f"いつもお世話になっております。{school_name}です。\n"
+        "スクールバスの停留所と集合時刻が決まりましたので、お知らせします。\n\n"
+        "【停留所と集合時刻】\n"
+        + "\n".join(text for _, text in lines)
+        + "\n\n"
+        "集合時刻の5分前までに停留所にお越しください。\n"
+        "停留所の位置は添付の地図でご確認ください。"
+    )
