@@ -41,6 +41,7 @@ export default function StopsPage() {
 
   return (
     <PageFrame step={2} title="停留所の候補" description="候補地点をクリックすると、その停留所の詳しい情報が見られます。"
+               buddy={{ text: "ピンを押すと、その場所を選んだ理由がわかるよ" }}
                card={false}>
       {missing && <RestartGuide />}
       {error && <p className="rounded-field bg-warn p-3 text-h3 font-bold">{error}</p>}

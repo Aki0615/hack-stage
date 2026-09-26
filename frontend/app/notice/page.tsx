@@ -58,7 +58,8 @@ export default function NoticePage() {
   if (missing) {
     return (
       <PageFrame step={4} title="保護者への案内"
-                 description="メールでそのまま送れる案内文を作成できます。送る前に右の項目を確認してください。" card={false}>
+                 description="メールでそのまま送れる案内文を作成できます。送る前に右の項目を確認してください。" card={false}
+               buddy={{ text: "送る前に、右の4つを確かめてね" }}>
         <RestartGuide />
       </PageFrame>
     );

@@ -5,6 +5,7 @@ import { PageFrame, PageHeading } from "@/components/layout/PageFrame";
 import { StepNav } from "@/components/layout/StepNav";
 import { Panel } from "@/components/ui/Panel";
 import { BusMap } from "@/components/map/BusMap";
+import { Buddy } from "@/components/buddy/Buddy";
 import { generateRoutes } from "@/lib/api";
 import { RestartGuide } from "@/components/layout/RestartGuide";
 import { hasData, loadData, saveData } from "@/lib/storage";
@@ -83,7 +84,9 @@ function RouteView({ plans, current, onChange, school }:
   return (
     <>
       {/* 方針のタブ（案の色と名前は必ずセットで出す） */}
-      <div role="tablist" aria-label="ルート案" className="flex flex-wrap gap-[1.5625rem] lg:col-start-1 lg:row-start-2">
+      {/* 見出しの横は狭いので、そらまるはタブの右に置く */}
+      <div className="flex items-center justify-between gap-4 lg:col-start-1 lg:row-start-2">
+      <div role="tablist" aria-label="ルート案" className="flex shrink-0 flex-wrap gap-[1.5625rem] lg:flex-nowrap">
         {plans.map((p, i) => (
           <button key={p.id} type="button" role="tab" aria-selected={i === current} onClick={() => onChange(i)}
                   className={`h-[3.125rem] w-50 rounded-full border-3 border-black text-button-sm font-extrabold
@@ -91,6 +94,8 @@ function RouteView({ plans, current, onChange, school }:
             {STRATEGY_INFO[p.strategy].name}
           </button>
         ))}
+      </div>
+        <Buddy text="速さだけで選ばなくていいんだよ" />
       </div>
 
       {/* 地図 */}
