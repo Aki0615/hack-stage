@@ -139,6 +139,19 @@ function FitBounds({ points }: { points: Point[] }) {
       bounds.extend({ lat, lng });
     });
     map.fitBounds(bounds, 60);
+
+    // 地図の枠の大きさが変わったら（画面の読み込み直後など）、合わせ直す。
+    // Google Maps が新しい大きさを取り込むのを少し待ってから合わせる
+    let timer: ReturnType<typeof setTimeout>;
+    const observer = new ResizeObserver(() => {
+      clearTimeout(timer);
+      timer = setTimeout(() => map.fitBounds(bounds, 60), 300);
+    });
+    observer.observe(map.getDiv());
+    return () => {
+      observer.disconnect();
+      clearTimeout(timer);
+    };
   }, [map, key]);
   return null;
 }

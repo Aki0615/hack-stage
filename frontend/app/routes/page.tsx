@@ -95,7 +95,7 @@ function RouteView({ plans, current, onChange, school }:
           </button>
         ))}
       </div>
-        <Buddy text="速さだけで選ばなくていいんだよ" />
+        <Buddy text="速さだけで選ばないでね" />
       </div>
 
       {/* 地図 */}
