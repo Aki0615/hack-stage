@@ -6,6 +6,7 @@ import { Panel } from "@/components/ui/Panel";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { FormPreview } from "@/components/form/FormPreview";
+import { Buddy } from "@/components/buddy/Buddy";
 import { createPlan, uploadCsv, generateStops } from "@/lib/api";
 import { clearData, saveData } from "@/lib/storage";
 import { DEFAULT_SCHOOL, getCurrentPosition, type LatLng } from "@/lib/school";
@@ -84,7 +85,8 @@ export default function ImportPage() {
   if (done) progress = "w-full duration-300";
 
   return (
-    <PageFrame step={0} title="住所を取り込み" description="保護者にformを共有し、解答を取り込みましょう">
+    <PageFrame step={0} title="住所を取り込み" description="保護者にformを共有し、解答を取り込みましょう"
+               buddy={done ? undefined : { text: "回答を読み込んだら、停留所とルートはぼくが考えるね" }}>
       <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[950fr_575fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-[6.9375rem]">
         {/* 左：申し込みformのテンプレート */}
         <Panel title="申し込みformのテンプレート" description="このテンプレートをもとにformを作成し、共有できます。" className="min-h-0">
@@ -147,12 +149,16 @@ export default function ImportPage() {
               </div>
 
               {loading && <p className="text-h3 text-text-gray">作成しています…（30秒ほどかかることがあります）</p>}
-              {done && <p className="text-h3 text-text-gray">できました。次へを押してください。</p>}
+              {/* 広い画面では、そらまるが代わりに知らせる */}
+              {done && <p className="text-h3 text-text-gray md:hidden">できました。次へを押してください。</p>}
               {error && <p className="rounded-field bg-warn p-3 text-h3 font-bold">{error}</p>}
             </div>
           </Panel>
 
-          <div className="self-end">
+          {/* できたら、そらまるがボタンの左に浮かんで知らせる（ほかの部品の高さは変えない） */}
+          <div className="relative self-end">
+            {done && <Buddy text="できたよ！取り込み結果へ進んでね" mood="happy" shadow
+                            className="absolute bottom-0 right-full mr-4 w-[21rem] justify-end" />}
             <Button onClick={() => router.push("/result")} disabled={!done}>
               {done ? "取り込み結果へ" : "次へ"}
             </Button>

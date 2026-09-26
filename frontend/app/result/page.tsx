@@ -40,7 +40,9 @@ export default function ResultPage() {
   const needsCheck = result.records.filter((r) => r.issues.length > 0);
 
   return (
-    <PageFrame step={1} title="取り込み結果" description="回答をもとに、利用者の分布を整理しました。" card={false}>
+    <PageFrame step={1} title="取り込み結果" description="回答をもとに、利用者の分布を整理しました。" card={false}
+               buddy={{ text: needsCheck.length > 0 ? "確認が必要な申込は、先に保護者に聞いておくと安心だよ"
+                                                   : "みんなの住所を地図に置けたよ！" }}>
       <div className="flex min-h-0 flex-1 flex-col gap-[2.5625rem]">
         {/* 集計 */}
         <div className="grid shrink-0 grid-cols-3 gap-[1.6875rem]">

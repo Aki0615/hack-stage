@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { PageFrame } from "@/components/layout/PageFrame";
 import { Button } from "@/components/ui/Button";
+import { Buddy } from "@/components/buddy/Buddy";
 import { RestartGuide } from "@/components/layout/RestartGuide";
 import { hasData, loadData } from "@/lib/storage";
 import { STEP_TITLES } from "@/lib/steps";
@@ -59,7 +60,9 @@ export default function DonePage() {
       {error && <p className="shrink-0 rounded-field bg-warn p-3 text-h3 font-bold">{error}</p>}
 
       {/* コピーボタンは、カードの右端にそろえる */}
-      <div className="mx-auto flex w-full max-w-[86.8125rem] shrink-0 justify-end">
+      {/* そらまるは右下で、コピーボタンの左に並べる */}
+      <div className="mx-auto flex w-full max-w-[86.8125rem] shrink-0 items-center justify-end gap-6">
+        <Buddy text="おつかれさま！保護者に届けよう" mood="happy" shadow />
         <Button size="sm" onClick={copy} disabled={!text}>
           {copied ? "コピーしました" : "文章をコピー"}
         </Button>
