@@ -26,7 +26,7 @@ export default function NoticePage() {
 
   // 画面を開いたら案内文を作る
   useEffect(() => {
-    generateNotice(loadData("planId"))
+    generateNotice(loadData("planId"), loadData("selectedRouteId"))
       .then((notice) => setText(notice))
       .catch((e) => setError(e.message));
   }, []);
