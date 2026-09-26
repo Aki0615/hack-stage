@@ -1,3 +1,5 @@
+/// <reference types="google.maps" />
+// ↑ new google.maps.〇〇 の型（@types/google.maps）を読み込む。"use client" より前に置く
 "use client";
 import { useEffect } from "react";
 import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
