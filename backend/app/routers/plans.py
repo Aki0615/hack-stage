@@ -2,33 +2,35 @@ from fastapi import APIRouter, UploadFile, File, HTTPException
 from pydantic import BaseModel
 from app.db import supabase
 from app.services import csv_parser, validator, geocoding
+from app.mock import load_mock
 
 router = APIRouter()
 
-# 学校の名前と位置（画面から送られてこないときに使う）
-SCHOOL_NAME = "さくら小学校"
-SCHOOL_LAT = 35.1709
-SCHOOL_LNG = 136.8815
-
+# フロントエンドから受け取るデータの形を約束する
 class PlanCreate(BaseModel):
-    bus_count: int
-    bus_capacity: int
-    school_name: str = SCHOOL_NAME
-    school_lat: float = SCHOOL_LAT
-    school_lng: float = SCHOOL_LNG
+    school_lat: float
+    school_lng: float
+    school_name: str = "現在地の学校"
+    bus_count: int = 2
+    bus_capacity: int = 20
 
-# 新規計画作成：バスの条件と学校の位置を保存して、idを返す
+# 新規計画作成（本番用）
 @router.post("/plans")
-def create_plan(body: PlanCreate):
-    if body.bus_count < 1 or body.bus_capacity < 1:
-        raise HTTPException(400, "バスの台数と定員は1以上にしてください")
-    saved = supabase.table("plans").insert(body.model_dump()).execute().data[0]
-    return {"id": saved["id"]}
+def create_plan(plan: PlanCreate):
+    # 打越さんから送られてきた緯度経度をSupabaseのplansテーブルに保存する
+    result = supabase.table("plans").insert({
+        "school_name": plan.school_name,
+        "school_lat": plan.school_lat,
+        "school_lng": plan.school_lng,
+        "bus_count": plan.bus_count,
+        "bus_capacity": plan.bus_capacity
+    }).execute()
+    
+    return result.data[0]
 
 # CSVインポート・Geocoding処理
 @router.post("/plans/{plan_id}/csv")
 def import_csv(plan_id: str, file: UploadFile = File(...)):
-
     df = csv_parser.read_csv_file(file.file.read(), file.filename or "")
     mapping = csv_parser.detect_columns(list(df.columns))
     if "name" not in mapping.values() or "address" not in mapping.values():
@@ -47,7 +49,6 @@ def import_csv(plan_id: str, file: UploadFile = File(...)):
             "lat": r["lat"], "lng": r["lng"], "geocode_status": r["status"],
         })
     supabase.table("students").insert(rows).execute()
-
 
     needs_check = [r for r in records if len(r["issues"]) > 0]
     return {
