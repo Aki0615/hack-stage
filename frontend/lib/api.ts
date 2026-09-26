@@ -1,5 +1,6 @@
 import type { ImportResult, StopCandidate, RoutePlan } from "./types";
-import { SCHOOL, SCHOOL_NAME } from "./steps";
+import { SCHOOL_NAME } from "./steps";
+import type { LatLng } from "./school";
 import importMock from "@/mocks/import.json";
 import stopsMock from "@/mocks/stops.json";
 import routesMock from "@/mocks/routes.json";
@@ -30,12 +31,13 @@ function wait() {
   return new Promise((resolve) => setTimeout(resolve, 600));
 }
 
-export async function createPlan(busCount: number, capacity: number): Promise<string> {
+// school：学校の位置（先生の現在地）
+export async function createPlan(busCount: number, capacity: number, school: LatLng): Promise<string> {
   if (USE_MOCK) { return "mock-plan"; }
   const res = await request("/plans", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ bus_count: busCount, bus_capacity: capacity, school_name: SCHOOL_NAME, school_lat: SCHOOL.lat, school_lng: SCHOOL.lng }),
+    body: JSON.stringify({ bus_count: busCount, bus_capacity: capacity, school_name: SCHOOL_NAME, school_lat: school.lat, school_lng: school.lng }),
   });
   await checkError(res);
   const data = await res.json();

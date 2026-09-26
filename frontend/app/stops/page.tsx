@@ -7,7 +7,7 @@ import { Panel } from "@/components/ui/Panel";
 import { BusMap } from "@/components/map/BusMap";
 import { generateStops } from "@/lib/api";
 import { loadData } from "@/lib/storage";
-import { SCHOOL } from "@/lib/steps";
+import { DEFAULT_SCHOOL, loadSchool } from "@/lib/school";
 import type { StopCandidate } from "@/lib/types";
 
 export default function StopsPage() {
@@ -15,12 +15,14 @@ export default function StopsPage() {
   const [stops, setStops] = useState<StopCandidate[]>([]);
   const [selected, setSelected] = useState(1);
   const [error, setError] = useState("");
+  const [school, setSchool] = useState(DEFAULT_SCHOOL);
 
   // 画面を開いたら、取り込み画面で作った停留所候補を出す（なければここで作る）
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSchool(loadSchool());
     const saved: StopCandidate[] | null = loadData("stops");
     if (saved) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStops(saved);
       return;
     }
@@ -39,7 +41,7 @@ export default function StopsPage() {
 
       {stops.length > 0 && (
         <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[950fr_616fr] lg:grid-rows-[minmax(0,1fr)] lg:gap-[5.4375rem]">
-          <BusMap school={SCHOOL} stops={stops} selectedLabel={selected} onSelect={setSelected} />
+          <BusMap school={school} stops={stops} selectedLabel={selected} onSelect={setSelected} />
 
           {stop && (
             <Panel title={`候補${stop.label}`} className="max-h-full gap-7 self-start overflow-y-auto px-7 py-8 lg:min-h-[86%]">
