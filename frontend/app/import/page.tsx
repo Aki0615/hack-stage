@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PageFrame } from "@/components/layout/PageFrame";
 import { Panel } from "@/components/ui/Panel";
@@ -8,6 +8,7 @@ import { TextField } from "@/components/ui/TextField";
 import { FormPreview } from "@/components/form/FormPreview";
 import { createPlan, uploadCsv, generateStops } from "@/lib/api";
 import { saveData } from "@/lib/storage";
+import { DEFAULT_SCHOOL, getCurrentPosition, type LatLng } from "@/lib/school";
 
 // 申し込みformのテンプレート（GoogleフォームのID。未設定なら画面内のプレビューを表示する）
 // 作り方は scripts/create-form.gs を参照。編集画面のURLをそのまま入れても、IDだけ取り出して使う
@@ -22,6 +23,27 @@ export default function ImportPage() {
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
+  const [school, setSchool] = useState<LatLng | null>(null);   // 学校の所在地（先生の現在地）
+  const [locating, setLocating] = useState(true);
+  const [locationError, setLocationError] = useState("");        // 現在地が取れなかった理由
+
+  // 現在地の結果を画面に反映する
+  function applyLocation(result: Awaited<ReturnType<typeof getCurrentPosition>>) {
+    setSchool("pos" in result ? result.pos : null);
+    setLocationError("reason" in result ? result.reason : "");
+    setLocating(false);
+  }
+
+  // 学校の所在地として、ブラウザから現在地を取り直す
+  function locate() {
+    setLocating(true);
+    getCurrentPosition().then(applyLocation);
+  }
+
+  // 画面を開いたら、まず現在地を取る
+  useEffect(() => {
+    getCurrentPosition().then(applyLocation);
+  }, []);
 
   // ファイルを選んだとき（選び直したら、もう一度作成からやり直す）
   function handleFile(selected: File | null) {
@@ -39,10 +61,12 @@ export default function ImportPage() {
     setLoading(true);
     setError("");
     try {
-      const planId = await createPlan(busCount, capacity);
+      const schoolPos = school ?? DEFAULT_SCHOOL;   // 現在地が取れなければ既定の位置
+      const planId = await createPlan(busCount, capacity, schoolPos);
       const result = await uploadCsv(planId, file);
       const stops = await generateStops(planId);
       saveData("planId", planId);
+      saveData("school", schoolPos);
       saveData("busCount", busCount);
       saveData("importResult", result);
       saveData("stops", stops);
@@ -95,8 +119,23 @@ export default function ImportPage() {
                            onChange={(v) => setBusCount(Number(v))} />
                 <TextField label="１台あたりの定員数" type="number" min={1} value={capacity}
                            onChange={(v) => setCapacity(Number(v))} />
+                {/* 学校の所在地（今いる場所を学校とみなす） */}
+                <p className="text-h3">
+                  <span className="font-bold">学校の所在地：</span>
+                  {locating ? "現在地を確認しています…"
+                    : school ? `今いる場所（緯度${school.lat.toFixed(4)}・経度${school.lng.toFixed(4)}）`
+                    : "名古屋駅付近"}
+                  {/* 現在地が取れなかったときだけ、取り直せるようにする */}
+                  {!locating && !school && (
+                    <button type="button" onClick={locate} disabled={loading}
+                            className="ml-3 font-bold underline underline-offset-4">
+                      現在地を取り直す
+                    </button>
+                  )}
+                </p>
+                {!locating && locationError && <p className="-mt-3 text-caption text-text-gray">{locationError}</p>}
                 <div className="flex flex-col items-start gap-3">
-                  <Button size="md" onClick={handleCreate} disabled={loading || done}>
+                  <Button size="md" onClick={handleCreate} disabled={loading || done || locating}>
                     停留所とルートを作成する
                   </Button>
                   <div role="progressbar" aria-label="作成の進み具合" aria-valuenow={done ? 100 : loading ? 50 : 0}

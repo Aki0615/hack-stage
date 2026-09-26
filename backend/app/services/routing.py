@@ -62,6 +62,11 @@ def make_times(order: list[int], time_table: list[list[int]], arrive_minutes: in
         times.insert(0, to_clock(t))
     return times
 
+def to_minutes(clock: str) -> int:
+    """"7:05" を 425（分）に直す"""
+    h, m = clock.split(":")
+    return int(h) * 60 + int(m)
+
 def make_metrics(stops: list[dict], longest_minutes: int) -> dict:
     all_walks = []
     for s in stops:
@@ -123,17 +128,28 @@ def make_three_plans(school: dict, students: list[dict], bus_count: int, capacit
 
         buses = []
         longest = 0
+        visits = []      # (集合時刻の分, 停留所) … あとで早い順に番号を付ける
         for order in orders:
             if len(order) == 0:
                 continue
             times = make_times(order, time_table)
             bus_stops = []
             for node, time in zip(order, times):
-                bus_stops.append({"stop_label": stops[node - 1]["label"], "time": time})
+                stop = stops[node - 1]
+                bus_stops.append({"stop": stop, "time": time})
+                visits.append((to_minutes(time), len(visits), stop))
             # 使わなかったバスを飛ばして、1号車から順に番号を付ける
             buses.append({"bus": len(buses) + 1, "stops": bus_stops})
-            minutes = 8 * 60 - (int(times[0].split(":")[0]) * 60 + int(times[0].split(":")[1]))
+            minutes = 8 * 60 - to_minutes(times[0])
             longest = max(longest, minutes)
+
+        # 停留所の番号を、バスが来るのが早い順に 1, 2, 3… と付け直す
+        visits.sort(key=lambda v: (v[0], v[1]))
+        for i, (_, _, stop) in enumerate(visits):
+            stop["label"] = i + 1
+        for bus in buses:
+            bus["stops"] = [{"stop_label": bs["stop"]["label"], "time": bs["time"]} for bs in bus["stops"]]
+        stops.sort(key=lambda s: s["label"])
 
         for s in stops:
             s.pop("members", None)

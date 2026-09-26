@@ -7,7 +7,7 @@ import { Panel } from "@/components/ui/Panel";
 import { BusMap } from "@/components/map/BusMap";
 import { generateRoutes } from "@/lib/api";
 import { loadData, saveData } from "@/lib/storage";
-import { SCHOOL } from "@/lib/steps";
+import { DEFAULT_SCHOOL, loadSchool, type LatLng } from "@/lib/school";
 import { STRATEGY_INFO, STRATEGY_ORDER } from "@/lib/strategy";
 import { routeNotes } from "@/lib/routeNotes";
 import type { RoutePlan } from "@/lib/types";
@@ -20,9 +20,12 @@ export default function RoutesPage() {
   const [plans, setPlans] = useState<RoutePlan[]>([]);
   const [current, setCurrent] = useState(0);          // 今見ている案の番号
   const [error, setError] = useState("");
+  const [school, setSchool] = useState(DEFAULT_SCHOOL);
 
   // 画面を開いたら3つのルート案を作る（効率・公平性・安全の順に並べる）
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSchool(loadSchool());
     generateRoutes(loadData("planId"))
       .then((data) => setPlans([...data].sort((a, b) => STRATEGY_ORDER.indexOf(a.strategy) - STRATEGY_ORDER.indexOf(b.strategy))))
       .catch((e) => setError(e.message));
@@ -46,7 +49,7 @@ export default function RoutesPage() {
         {error && <p className="rounded-field bg-warn p-3 text-h3 font-bold">{error}</p>}
         {!plan && !error && <p className="text-h3">ルート案を作っています…</p>}
 
-        {plan && <RouteView plans={plans} current={current} onChange={setCurrent} />}
+        {plan && <RouteView plans={plans} current={current} onChange={setCurrent} school={school} />}
       </div>
 
       <StepNav backHref="/stops" nextLabel="この案で案内を作る" onNext={choose} nextDisabled={!plan} />
@@ -55,7 +58,8 @@ export default function RoutesPage() {
 }
 
 // タブ・地図・案の詳しい情報
-function RouteView({ plans, current, onChange }: { plans: RoutePlan[]; current: number; onChange: (i: number) => void }) {
+function RouteView({ plans, current, onChange, school }:
+                     { plans: RoutePlan[]; current: number; onChange: (i: number) => void; school: LatLng }) {
   const plan = plans[current];
   const info = STRATEGY_INFO[plan.strategy];
   const notes = routeNotes(plan, plans);
@@ -66,7 +70,7 @@ function RouteView({ plans, current, onChange }: { plans: RoutePlan[]; current: 
       .map((bs) => plan.stops.find((s) => s.label === bs.stop_label))
       .filter((s) => s !== undefined)
       .map((s) => ({ lat: s.lat, lng: s.lng }));
-    return { colorVar: info.colorVar, points: [...points, SCHOOL] };
+    return { colorVar: info.colorVar, points: [...points, school] };
   });
 
   return (
@@ -84,7 +88,7 @@ function RouteView({ plans, current, onChange }: { plans: RoutePlan[]; current: 
 
       {/* 地図 */}
       <div className="min-h-0 lg:col-start-1 lg:row-start-3">
-        <BusMap school={SCHOOL} stops={plan.stops} lines={lines} />
+        <BusMap school={school} stops={plan.stops} lines={lines} />
       </div>
 
       {/* 案の詳しい情報 */}

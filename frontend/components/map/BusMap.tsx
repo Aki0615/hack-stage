@@ -81,6 +81,17 @@ function tokenColor(name: string) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
+// 線の上に一定の間隔で並べる小さな矢印（バスの進む向き）。上向きの矢じりの形を、進む向きに回して置く
+function arrowIcon() {
+  const white = tokenColor("--color-white");
+  return {
+    icon: { path: "M -1.5 1.5 L 0 -1.5 L 1.5 1.5 L 0 0.6 Z", fillColor: white, fillOpacity: 1,
+            strokeColor: white, strokeWeight: 1, scale: 2 },
+    offset: "45px",
+    repeat: "90px",
+  };
+}
+
 // 地図に線を引く部品（画面には何も表示せず、地図に線を足すだけ）
 // 道路に沿った道順を取って線を引く。取れないときは停留所どうしを直線で結ぶ
 function RouteLine({ line }: { line: RouteLineData }) {
@@ -95,7 +106,7 @@ function RouteLine({ line }: { line: RouteLineData }) {
       if (cancelled) return;
       drawn = [
         new google.maps.Polyline({ path, strokeColor: tokenColor("--color-black"), strokeWeight: 9, map }),
-        new google.maps.Polyline({ path, strokeColor: tokenColor(line.colorVar), strokeWeight: 5, map }),
+        new google.maps.Polyline({ path, strokeColor: tokenColor(line.colorVar), strokeWeight: 5, map, icons: [arrowIcon()] }),
       ];
     }
 
