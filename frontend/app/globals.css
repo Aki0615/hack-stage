@@ -41,6 +41,12 @@ html {
   --radius-field: 0.9375rem;  /* 入力欄 */
   --radius-check: 0.625rem;  /* チェックボックス */
 
+  /* キャラクター「そらまる」のふわふわ動き */
+  --animate-float: float 3.2s ease-in-out infinite;
+  @keyframes float {
+    50% { transform: translateY(-0.375rem); }
+  }
+
   /* フォント（layout.tsx で読み込んだ変数を使う） */
   --font-sans: var(--font-rounded), "Hiragino Maru Gothic ProN", sans-serif;
 }
